@@ -4,22 +4,22 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
--- Premium System
+-- Auto-Grant Premium to Everyone
 local function GrantPremiumToAll()
-    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
-        player:SetAttribute("Premium", true)  -- Match existing "Premium"
+    for _, player in ipairs(Players:GetPlayers()) do
+        player:SetAttribute("Premium", true)
     end
 end
 
-game:GetService("Players").PlayerAdded:Connect(function(player)
-    player:SetAttribute("Premium", true)  -- Match existing "Premium"
+-- Give Premium to New Players
+Players.PlayerAdded:Connect(function(player)
+    player:SetAttribute("Premium", true)
 end)
 
-function IsPremium(player)
-    return player:GetAttribute("Premium") == true  -- Match existing "Premium"
-end
-
+-- Grant Premium to All Players When Script Runs
+GrantPremiumToAll()
 local OrionLib = {
 	Elements = {},
 	ThemeObjects = {},
@@ -738,8 +738,7 @@ function OrionLib:MakeWindow(WindowConfig)
 		TabConfig = TabConfig or {}
 		TabConfig.Name = TabConfig.Name or "Tab"
 		TabConfig.Icon = TabConfig.Icon or ""
-	TabConfig.PremiumOnly = TabConfig.PremiumOnly or IsPremium(LocalPlayer)
-
+	TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
 		local TabFrame = SetChildren(SetProps(MakeElement("Button"), {
 			Size = UDim2.new(1, 0, 0, 30),
 			Parent = TabHolder
@@ -1681,7 +1680,7 @@ function OrionLib:MakeWindow(WindowConfig)
 			ElementFunction[i] = v 
 		end
 
-		if TabConfig.PremiumOnly then
+if TabConfig.PremiumOnly and not LocalPlayer:GetAttribute("Premium") then
 			for i, v in next, ElementFunction do
 				ElementFunction[i] = function() end
 			end    
