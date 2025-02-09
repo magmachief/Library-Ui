@@ -5,6 +5,21 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local HttpService = game:GetService("HttpService")
 
+-- Premium System
+local function GrantPremiumToAll()
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        player:SetAttribute("Premium", true)  -- Match existing "Premium"
+    end
+end
+
+game:GetService("Players").PlayerAdded:Connect(function(player)
+    player:SetAttribute("Premium", true)  -- Match existing "Premium"
+end)
+
+function IsPremium(player)
+    return player:GetAttribute("Premium") == true  -- Match existing "Premium"
+end
+
 local OrionLib = {
 	Elements = {},
 	ThemeObjects = {},
