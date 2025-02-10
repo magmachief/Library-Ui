@@ -2,8 +2,9 @@
   OrionLib - A UI Library for Roblox
   Improved with smoother animations and a built-in console (mobile friendly)
   
-  Original Code from OrionLib (as provided) is included below.
-  The built-in console functions are added at the end.
+  Original Code from OrionLib is included below.
+  At the end, built-in console functions are added so that if you call
+  OrionLib:MakeConsole(), the console GUI appears.
   
   Enjoy and happy scripting!
 --]]
@@ -144,10 +145,10 @@ local function MakeDraggable(DragPoint, Main)
         AddConnection(UserInputService.InputChanged, function(Input)
             if Input == DragInput and Dragging then
                 local Delta = Input.Position - MousePos
-                TweenService:Create(Main, TweenInfo.new(0.05, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                    Position  = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
+                TweenService:Create(Main, TweenInfo.new(0.05, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    Position = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
                 }):Play()
-                Main.Position  = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
+                Main.Position = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
             end
         end)
     end)
@@ -253,14 +254,14 @@ local function LoadCfg(Config)
                 end    
             end)
         else
-            warn("Orion Library Config Loader - Could not find ", a ,b)
+            warn("Orion Library Config Loader - Could not find ", a, b)
         end
     end)
 end
 
 local function SaveCfg(Name)
     local Data = {}
-    for i,v in pairs(OrionLib.Flags) do
+    for i, v in pairs(OrionLib.Flags) do
         if v.Save then
             if v.Type == "Colorpicker" then
                 Data[i] = PackColor(v.Value)
@@ -1118,7 +1119,7 @@ function OrionLib:MakeWindow(WindowConfig)
 
                 function Slider:Set(Value)
                     self.Value = math.clamp(Round(Value, SliderConfig.Increment), SliderConfig.Min, SliderConfig.Max)
-                    TweenService:Create(SliderDrag,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = UDim2.fromScale((self.Value - SliderConfig.Min) / (SliderConfig.Max - SliderConfig.Min), 1)}):Play()
+                    TweenService:Create(SliderDrag, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.fromScale((self.Value - SliderConfig.Min) / (SliderConfig.Max - SliderConfig.Min), 1)}):Play()
                     SliderBar.Value.Text = tostring(self.Value) .. " " .. SliderConfig.ValueName
                     SliderDrag.Value.Text = tostring(self.Value) .. " " .. SliderConfig.ValueName
                     SliderConfig.Callback(self.Value)
@@ -1234,7 +1235,7 @@ function OrionLib:MakeWindow(WindowConfig)
 
                 function Dropdown:Refresh(Options, Delete)
                     if Delete then
-                        for _,v in pairs(Dropdown.Buttons) do
+                        for _, v in pairs(Dropdown.Buttons) do
                             v:Destroy()
                         end    
                         table.clear(Dropdown.Options)
@@ -1249,8 +1250,8 @@ function OrionLib:MakeWindow(WindowConfig)
                         Dropdown.Value = "..."
                         DropdownFrame.F.Selected.Text = Dropdown.Value
                         for _, v in pairs(Dropdown.Buttons) do
-                            TweenService:Create(v,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                            TweenService:Create(v.Title,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0.4}):Play()
+                            TweenService:Create(v, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(v.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0.4}):Play()
                         end	
                         return
                     end
@@ -1259,22 +1260,22 @@ function OrionLib:MakeWindow(WindowConfig)
                     DropdownFrame.F.Selected.Text = Dropdown.Value
 
                     for _, v in pairs(Dropdown.Buttons) do
-                        TweenService:Create(v,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                        TweenService:Create(v.Title,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0.4}):Play()
+                        TweenService:Create(v, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+                        TweenService:Create(v.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0.4}):Play()
                     end	
-                    TweenService:Create(Dropdown.Buttons[Value],TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                    TweenService:Create(Dropdown.Buttons[Value].Title,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
+                    TweenService:Create(Dropdown.Buttons[Value], TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
+                    TweenService:Create(Dropdown.Buttons[Value].Title, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
                     return DropdownConfig.Callback(Dropdown.Value)
                 end
 
                 AddConnection(Click.MouseButton1Click, function()
                     Dropdown.Toggled = not Dropdown.Toggled
                     DropdownFrame.F.Line.Visible = Dropdown.Toggled
-                    TweenService:Create(DropdownFrame.F.Ico,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Rotation = Dropdown.Toggled and 180 or 0}):Play()
+                    TweenService:Create(DropdownFrame.F.Ico, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = Dropdown.Toggled and 180 or 0}):Play()
                     if #Dropdown.Options > MaxElements then
-                        TweenService:Create(DropdownFrame,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Dropdown.Toggled and UDim2.new(1, 0, 0, 38 + (MaxElements * 28)) or UDim2.new(1, 0, 0, 38)}):Play()
+                        TweenService:Create(DropdownFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = Dropdown.Toggled and UDim2.new(1, 0, 0, 38 + (MaxElements * 28)) or UDim2.new(1, 0, 0, 38)}):Play()
                     else
-                        TweenService:Create(DropdownFrame,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Dropdown.Toggled and UDim2.new(1, 0, 0, DropdownList.AbsoluteContentSize.Y + 38) or UDim2.new(1, 0, 0, 38)}):Play()
+                        TweenService:Create(DropdownFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = Dropdown.Toggled and UDim2.new(1, 0, 0, DropdownList.AbsoluteContentSize.Y + 38) or UDim2.new(1, 0, 0, 38)}):Play()
                     end
                 end)
 
@@ -1590,7 +1591,7 @@ function OrionLib:MakeWindow(WindowConfig)
 
                 AddConnection(Click.MouseButton1Click, function()
                     Colorpicker.Toggled = not Colorpicker.Toggled
-                    TweenService:Create(ColorpickerFrame,TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),{Size = Colorpicker.Toggled and UDim2.new(1, 0, 0, 148) or UDim2.new(1, 0, 0, 38)}):Play()
+                    TweenService:Create(ColorpickerFrame, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = Colorpicker.Toggled and UDim2.new(1, 0, 0, 148) or UDim2.new(1, 0, 0, 38)}):Play()
                     Color.Visible = Colorpicker.Toggled
                     Hue.Visible = Colorpicker.Toggled
                     ColorpickerFrame.F.Line.Visible = Colorpicker.Toggled
@@ -1929,6 +1930,172 @@ end
 function OrionLib:Destroy()
 	Orion:Destroy()
 end
+
+-----------------------
+-- BUILT-IN CONSOLE FUNCTIONS
+-----------------------
+function OrionLib:MakeConsole()
+    -- Create a new ScreenGui for the console
+    local consoleGui = Instance.new("ScreenGui")
+    consoleGui.Name = "OrionConsole"
+    if syn then
+        syn.protect_gui(consoleGui)
+        consoleGui.Parent = game:GetService("CoreGui")
+    else
+        consoleGui.Parent = game:GetService("CoreGui")
+    end
+
+    -- Main console frame (you can adjust size & style as desired)
+    local consoleFrame = Instance.new("Frame")
+    consoleFrame.Name = "ConsoleFrame"
+    consoleFrame.Size = UDim2.new(0, 400, 0, 300)
+    -- Start off-screen at the bottom so we can animate it in
+    consoleFrame.Position = UDim2.new(0.5, -200, 1, 0)
+    consoleFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    consoleFrame.BorderSizePixel = 0
+    consoleFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    consoleFrame.Parent = consoleGui
+
+    -- Title bar (draggable area)
+    local titleBar = Instance.new("Frame", consoleFrame)
+    titleBar.Name = "TitleBar"
+    titleBar.Size = UDim2.new(1, 0, 0, 30)
+    titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    titleBar.BorderSizePixel = 0
+
+    local titleLabel = Instance.new("TextLabel", titleBar)
+    titleLabel.Name = "TitleLabel"
+    titleLabel.Size = UDim2.new(1, -40, 1, 0)
+    titleLabel.Position = UDim2.new(0, 5, 0, 0)
+    titleLabel.Text = "Orion Console"
+    titleLabel.TextColor3 = Color3.new(1, 1, 1)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.FredokaOne
+    titleLabel.TextSize = 18
+
+    local closeButton = Instance.new("TextButton", titleBar)
+    closeButton.Name = "CloseButton"
+    closeButton.Size = UDim2.new(0, 30, 0, 30)
+    closeButton.Position = UDim2.new(1, -30, 0, 0)
+    closeButton.Text = "X"
+    closeButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+    closeButton.BackgroundTransparency = 1
+    closeButton.Font = Enum.Font.FredokaOne
+    closeButton.TextSize = 18
+
+    -- Output log (a scrolling frame for console text)
+    local outputFrame = Instance.new("ScrollingFrame", consoleFrame)
+    outputFrame.Name = "OutputFrame"
+    outputFrame.Size = UDim2.new(1, -10, 1, -70)
+    outputFrame.Position = UDim2.new(0, 5, 0, 35)
+    outputFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    outputFrame.BorderSizePixel = 0
+    outputFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    outputFrame.ScrollBarThickness = 5
+
+    local listLayout = Instance.new("UIListLayout", outputFrame)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Padding = UDim.new(0, 5)
+
+    -- Input box for commands
+    local inputBox = Instance.new("TextBox", consoleFrame)
+    inputBox.Name = "InputBox"
+    inputBox.Size = UDim2.new(1, -10, 0, 30)
+    inputBox.Position = UDim2.new(0, 5, 1, -35)
+    inputBox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    inputBox.TextColor3 = Color3.new(1, 1, 1)
+    inputBox.ClearTextOnFocus = false
+    inputBox.PlaceholderText = "Enter command..."
+    inputBox.Font = Enum.Font.FredokaOne
+    inputBox.TextSize = 16
+
+    -- Animate console appearance (from bottom into center)
+    local appearTween = TweenService:Create(consoleFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+        {Position = UDim2.new(0.5, 0, 0.5, 0)})
+    appearTween:Play()
+
+    -- Close button: animate out and then destroy GUI
+    closeButton.MouseButton1Click:Connect(function()
+        local disappearTween = TweenService:Create(consoleFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), 
+            {Position = UDim2.new(0.5, 0, 1.5, 0)})
+        disappearTween:Play()
+        disappearTween.Completed:Connect(function()
+            consoleGui:Destroy()
+            OrionLib.ConsoleOpen = false
+        end)
+    end)
+
+    -- Process commands when inputBox loses focus (i.e. Enter is pressed)
+    inputBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            local command = inputBox.Text
+            inputBox.Text = ""
+            -- Log the command
+            local logLine = Instance.new("TextLabel", outputFrame)
+            logLine.Size = UDim2.new(1, 0, 0, 20)
+            logLine.BackgroundTransparency = 1
+            logLine.TextColor3 = Color3.new(1, 1, 1)
+            logLine.Font = Enum.Font.FredokaOne
+            logLine.TextSize = 16
+            logLine.Text = "> " .. command
+            logLine.LayoutOrder = #outputFrame:GetChildren() + 1
+
+            outputFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+
+            -- Try to execute the command (using loadstring; use with caution)
+            local success, result = pcall(function() return loadstring(command)() end)
+            local resultLine = Instance.new("TextLabel", outputFrame)
+            resultLine.Size = UDim2.new(1, 0, 0, 20)
+            resultLine.BackgroundTransparency = 1
+            resultLine.TextColor3 = success and Color3.new(0.5, 1, 0.5) or Color3.new(1, 0.5, 0.5)
+            resultLine.Font = Enum.Font.FredokaOne
+            resultLine.TextSize = 16
+            resultLine.Text = success and tostring(result) or "Error: " .. tostring(result)
+            resultLine.LayoutOrder = #outputFrame:GetChildren() + 1
+
+            outputFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+        end
+    end)
+
+    -- Make the console draggable via the title bar
+    local dragging, dragInput, dragStart, startPos = false, nil, nil, nil
+    titleBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = consoleFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    titleBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            consoleFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    OrionLib.ConsoleGUI = consoleGui
+    OrionLib.ConsoleOpen = true
+end
+
+function OrionLib:ToggleConsole()
+    if OrionLib.ConsoleOpen and OrionLib.ConsoleGUI then
+        OrionLib.ConsoleGUI:Destroy()
+        OrionLib.ConsoleOpen = false
+    else
+        OrionLib:MakeConsole()
+    end
+end
+
 -----------------------
 -- RETURN ORIONLIB
 -----------------------
