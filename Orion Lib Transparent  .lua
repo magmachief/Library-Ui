@@ -470,7 +470,6 @@ function OrionLib:MakeWindow(WindowConfig)
 	WindowConfig.ConfigFolder = WindowConfig.ConfigFolder or WindowConfig.Name
 	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false
 TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
-local isPremium = LocalPlayer:GetAttribute("Premium") == true  -- Auto-check Premium status
 	if WindowConfig.IntroEnabled == nil then
 		WindowConfig.IntroEnabled = true
 	end
