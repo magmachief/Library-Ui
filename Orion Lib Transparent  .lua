@@ -469,7 +469,7 @@ function OrionLib:MakeWindow(WindowConfig)
 	WindowConfig.Name = WindowConfig.Name or "Yonkai"
 	WindowConfig.ConfigFolder = WindowConfig.ConfigFolder or WindowConfig.Name
 	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false
-TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
+	WindowConfig.HidePremium = WindowConfig.HidePremium or false
 	if WindowConfig.IntroEnabled == nil then
 		WindowConfig.IntroEnabled = true
 	end
@@ -1681,7 +1681,7 @@ TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
 			ElementFunction[i] = v 
 		end
 
-if TabConfig.PremiumOnly and not isPremium then
+		if TabConfig.PremiumOnly then
 			for i, v in next, ElementFunction do
 				ElementFunction[i] = function() end
 			end    
