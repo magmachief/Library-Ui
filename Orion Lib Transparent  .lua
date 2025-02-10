@@ -738,8 +738,8 @@ function OrionLib:MakeWindow(WindowConfig)
 		TabConfig = TabConfig or {}
 		TabConfig.Name = TabConfig.Name or "Tab"
 		TabConfig.Icon = TabConfig.Icon or ""
-		TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
-
+TabConfig.PremiumOnly = TabConfig.PremiumOnly or false
+local isPremium = LocalPlayer:GetAttribute("Premium") == true 
 		local TabFrame = SetChildren(SetProps(MakeElement("Button"), {
 			Size = UDim2.new(1, 0, 0, 30),
 			Parent = TabHolder
@@ -1681,7 +1681,7 @@ function OrionLib:MakeWindow(WindowConfig)
 			ElementFunction[i] = v 
 		end
 
-		if TabConfig.PremiumOnly then
+if TabConfig.PremiumOnly and not isPremium then
 			for i, v in next, ElementFunction do
 				ElementFunction[i] = function() end
 			end    
@@ -1895,5 +1895,3 @@ end
 function OrionLib:Destroy()
 	Orion:Destroy()
 end
-
-return OrionLib
