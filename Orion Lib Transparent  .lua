@@ -492,17 +492,17 @@ function OrionLib:MakeWindow(config)
     local UIHidden = false
 
     config = config or {}
-    config.Name = config.Name or "Yonkai"
+    config.Name = config.Name or "Park Ji-woo"
     config.ConfigFolder = config.ConfigFolder or config.Name
     config.SaveConfig = config.SaveConfig or false
     config.HidePremium = config.HidePremium or false
     if config.IntroEnabled == nil then config.IntroEnabled = true end
-    config.IntroToggleIcon = config.IntroToggleIcon or "rbxassetid://8834748103"
-    config.IntroText = config.IntroText or "Yonkai"
+    config.IntroToggleIcon = config.IntroToggleIcon or "rbxassetid://14103606744"
+    config.IntroText = config.IntroText or "Park-Jiwoo"
     config.CloseCallback = config.CloseCallback or function() end
     config.ShowIcon = config.ShowIcon or false
-    config.Icon = config.Icon or "rbxassetid://8834748103"
-    config.IntroIcon = config.IntroIcon or "rbxassetid://8834748103"
+    config.Icon = config.Icon or "rbxassetid://14103606744"
+    config.IntroIcon = config.IntroIcon or "rbxassetid://14103606744"
     OrionLib.Folder = config.ConfigFolder
     OrionLib.SaveCfg = config.SaveConfig
 
