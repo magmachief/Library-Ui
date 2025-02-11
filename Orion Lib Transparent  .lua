@@ -662,7 +662,7 @@ function OrionLib:MakeWindow(config)
         BackgroundColor3 = OrionLib.Themes[OrionLib.SelectedTheme].Main,
         Visible = false
     }), {
-        AddThemeObject(SetProps(MakeElement("Image", config.IntroToggleIcon or "http://www.roblox.com/asset/?id=8834748103"), {
+        AddThemeObject(SetProps(MakeElement("Image", config.IntroToggleIcon or "http://www.roblox.com/asset/?id=14103606744e"), {
             AnchorPoint = Vector2.new(0.5,0.5),
             Position = UDim2.new(0.5,0,0.5,0),
             Size = UDim2.new(0.7,0,0.7,0)
