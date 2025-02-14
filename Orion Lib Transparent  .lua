@@ -89,7 +89,7 @@ if syn and syn.protect_gui then
 	syn.protect_gui(Orion)
 	Orion.Parent = game.CoreGui
 else
-	Orion.Parent = gethui() or game.CoreGui
+	Orion.Parent = gethui() or game:GetService("CoreGui")
 end
 
 -- UTILITY FUNCTIONS
@@ -210,12 +210,18 @@ local function ReturnProperty(obj)
 	end
 end
 
+-- MODIFIED AddThemeObject: Auto-capitalizes the key if necessary.
 local function AddThemeObject(obj, typeName)
 	if not OrionLib.ThemeObjects[typeName] then
 		OrionLib.ThemeObjects[typeName] = {}
 	end
 	table.insert(OrionLib.ThemeObjects[typeName], obj)
-	obj[ReturnProperty(obj)] = OrionLib.Themes[OrionLib.SelectedTheme][typeName]
+	local theme = OrionLib.Themes[OrionLib.SelectedTheme]
+	local key = typeName
+	if not theme[key] then
+		key = key:sub(1,1):upper() .. key:sub(2)
+	end
+	obj[ReturnProperty(obj)] = theme[key] or Color3.new(1,1,1)
 	return obj
 end
 
@@ -287,7 +293,9 @@ local function CheckKey(tbl, key)
 	end
 end
 
+-----------------------------------------
 -- BASIC ELEMENTS
+-----------------------------------------
 CreateElement("Corner", function(scale, offset)
 	return Create("UICorner", {CornerRadius = UDim.new(scale or 0, offset or 10)})
 end)
@@ -388,7 +396,9 @@ CreateElement("Label", function(text, textSize, transparency)
 	})
 end)
 
+-----------------------------------------
 -- NOTIFICATIONS
+-----------------------------------------
 local NotificationHolder = SetProps(SetChildren(MakeElement("TFrame"), {
 	SetProps(MakeElement("List"), {
 		HorizontalAlignment = Enum.HorizontalAlignment.Center,
@@ -476,7 +486,9 @@ function OrionLib:Init()
 	end
 end
 
+-----------------------------------------
 -- MAIN WINDOW & TAB CREATION
+-----------------------------------------
 function OrionLib:MakeWindow(config)
 	local firstTab = true
 	local minimized = false
@@ -565,7 +577,7 @@ function OrionLib:MakeWindow(config)
 				Size = UDim2.new(0,32,0,32),
 				Position = UDim2.new(0,10,0.5,0)
 			}), {
-				SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=420&height=420&format=png"), {
+				SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=420&height=420&format=png"), {
 					Size = UDim2.new(1,0,1,0)
 				}),
 				AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://4031889928"), {Size = UDim2.new(1,0,1,0)}), "Second"),
@@ -815,7 +827,7 @@ function OrionLib:MakeWindow(config)
 			Container.Visible = true
 		end)
 
-		local function GetElements(Container)  -- Note: Container is now the parameter instead of itemParent
+		local function GetElements(Container)
 			local ElementFunction = {}
 
 			function ElementFunction:AddLabel(text)
@@ -1613,5 +1625,7 @@ function OrionLib:MakeWindow(config)
 	return TabFunction
 end
 
+-----------------------------------------
 -- END OF ORIONLIB MODULE
+-----------------------------------------
 return OrionLib
