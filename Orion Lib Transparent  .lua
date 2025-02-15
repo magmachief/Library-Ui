@@ -88,7 +88,7 @@ if syn and syn.protect_gui then
     syn.protect_gui(Orion)
     Orion.Parent = game.CoreGui
 else
-    Orion.Parent = gethui() or game:GetService("CoreGui")
+    Orion.Parent = gethui() or game.CoreGui
 end
 
 -----------------------------------------
@@ -574,7 +574,7 @@ function OrionLib:MakeWindow(config)
                 Size = UDim2.new(0,32,0,32),
                 Position = UDim2.new(0,10,0.5,0)
             }), {
-                SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=420&height=420&format=png"), {
+                SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=420&height=420&format=png"), {
                     Size = UDim2.new(1,0,1,0)
                 }),
                 AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://4031889928"), {Size = UDim2.new(1,0,1,0)}), "Second"),
@@ -650,8 +650,6 @@ function OrionLib:MakeWindow(config)
             Position = UDim2.new(0,25,0,15)
         })
         WindowIcon.Parent = MainWindow.TopBar
-        -- Make the show icon draggable so you can move the window by dragging the icon.
-        MakeDraggable(WindowIcon, MainWindow)
     end
 
     MakeDraggable(DragPoint, MainWindow)
@@ -736,7 +734,7 @@ function OrionLib:MakeWindow(config)
         })
         TweenService:Create(LoadSequenceLogo, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0, Position = UDim2.new(0.5,0,0.5,0)}):Play()
         task.wait(0.8)
-        TweenService:Create(LoadSequenceLogo, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -(LoadSequenceText.TextBounds.X/2), 0.5,0)}):Play()
+        TweenService:Create(LoadSequenceLogo, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -(LoadSequenceText.TextBounds.X/2), 0.5, 0)}):Play()
         task.wait(0.3)
         TweenService:Create(LoadSequenceText, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
         task.wait(2)
@@ -785,8 +783,8 @@ function OrionLib:MakeWindow(config)
         end
 
         local Container = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255,255,255), 5), {
-            Size = UDim2.new(1, -150, 1, -50),
-            Position = UDim2.new(0, 150, 0, 50),
+            Size = UDim2.new(1,-150,1,-50),
+            Position = UDim2.new(0,150,0,50),
             Parent = MainWindow,
             Visible = false,
             Name = "ItemContainer"
@@ -1549,7 +1547,7 @@ function OrionLib:MakeWindow(config)
                             Name = "Line",
                             Visible = false
                         }), "Stroke")
-                    }), {Size = UDim2.new(1,0,0,38), ClipsDescendants = true, Name = "F"}),
+                    }), { Size = UDim2.new(1,0,0,38), ClipsDescendants = true, Name = "F" }),
                     colorpickerContainer,
                     AddThemeObject(MakeElement("Stroke"), "Stroke")
                 }), "Second")
@@ -1623,6 +1621,7 @@ function OrionLib:MakeWindow(config)
 
         local elementFunction = GetElements(Container)
         for key, value in pairs(elementFunction) do
+            -- Copy all element functions into the tab's ElementFunction table.
             elementFunction[key] = value
         end
 
