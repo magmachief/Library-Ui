@@ -542,7 +542,7 @@ function OrionLib:MakeWindow(config)
                 Size = UDim2.new(0,32,0,32),
                 Position = UDim2.new(0,10,0.5,0)
             }), {
-                SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=420&height=420&format=png"), {Size = UDim2.new(1,0,1,0)}),
+                SetProps(MakeElement("Image", "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=420&height=420&format=png"), {Size = UDim2.new(1,0,1,0)}),
                 AddThemeObject(SetProps(MakeElement("Image", "rbxassetid://4031889928"), {Size = UDim2.new(1,0,1,0)}), "Second"),
                 MakeElement("Corner", 1)
             }), "Divider"),
@@ -1135,19 +1135,28 @@ function OrionLib:MakeWindow(config)
                 end)
                 local function AddOptions(options)
                     for _, option in ipairs(options) do
-                        local optionBtn = AddThemeObject(SetProps(SetChildren(MakeElement("Button", Color3.fromRGB(40,40,40)), {
-                            MakeElement("Corner", 0,6),
-                            AddThemeObject(SetProps(MakeElement("Label", option, 13,0.4), {
-                                Position = UDim2.new(0,8,0,0),
-                                Size = UDim2.new(1,-8,1,0),
-                                Name = "Title"
-                            }), "Text")
-                        }), {
-                            Parent = dropdownContainer,
-                            Size = UDim2.new(1,0,0,28),
-                            BackgroundTransparency = 1,
-                            ClipsDescendants = true
-                        }), "Divider")
+                        local optionBtn = AddThemeObject(
+                            SetProps(
+                                SetChildren(MakeElement("Button", Color3.fromRGB(40,40,40)), {
+                                    MakeElement("Corner", 0,6),
+                                    AddThemeObject(
+                                        SetProps(MakeElement("Label", option, 13,0.4), {
+                                            Position = UDim2.new(0, 8, 0, 0),
+                                            Size = UDim2.new(1, -8, 1, 0),
+                                            Name = "Title"
+                                        }),
+                                        "Text"
+                                    )
+                                }),
+                                {
+                                    Parent = dropdownContainer,
+                                    Size = UDim2.new(1, 0, 0, 28),
+                                    BackgroundTransparency = 1,
+                                    ClipsDescendants = true
+                                }
+                            ),
+                            "Divider"
+                        )
                         AddConnection(optionBtn.MouseButton1Click, function()
                             dropdown:Set(option)
                             SaveCfg(game.GameId)
