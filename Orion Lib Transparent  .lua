@@ -1,8 +1,9 @@
 --[[
-    Advanced Orion UI Library v2025+ (Fully Loaded)
-    ---------------------------------------------------
-    Features:
-      • Enhanced core UI elements: AddButton, AddToggle, AddSlider, AddDropdown, AddBind, AddTextbox, AddColorpicker
+    Advanced Orion UI Library v2025+ (Fully Loaded & Updated)
+    ----------------------------------------------------------
+    Features (Updated):
+      • Enhanced core UI elements with smoother animations & rounded corners
+      • New “Exotic” theme with vibrant, cute pastel colors (switchable via OrionLib:ChangeTheme)
       • In–game Theme Editor with custom theme saving
       • Plugin API for third–party extensions
       • Responsive & Adaptive UI (auto scaling and layout adjustments)
@@ -73,6 +74,14 @@ local OrionLib = {
             Divider = Color3.fromRGB(60, 60, 60),
             Text = Color3.fromRGB(240, 240, 240),
             TextDark = Color3.fromRGB(150, 150, 150)
+        },
+        Exotic = {  -- New exotic/cute theme!
+            Main = Color3.fromRGB(255, 105, 180),   -- Hot pink
+            Second = Color3.fromRGB(255, 182, 193),   -- Light pink
+            Stroke = Color3.fromRGB(255, 105, 180),
+            Divider = Color3.fromRGB(255, 182, 193),
+            Text = Color3.fromRGB(255, 255, 255),
+            TextDark = Color3.fromRGB(220, 220, 220)
         }
     },
     SelectedTheme = "Default",
@@ -82,6 +91,19 @@ local OrionLib = {
     Language = "en",          -- Localization: default language
     Keybinds = {}             -- Customizable keybinds storage
 }
+
+-----------------------------------------------------
+-- THEME CHANGER FUNCTION (New)
+-----------------------------------------------------
+function OrionLib:ChangeTheme(themeName)
+    if self.Themes[themeName] then
+        self.SelectedTheme = themeName
+        SetTheme()  -- Update all theme objects
+        DebugModule.log("Theme changed to " .. themeName)
+    else
+        DebugModule.error("ChangeTheme", "Theme '" .. tostring(themeName) .. "' not found.")
+    end
+end
 
 -----------------------------------------------------
 -- FEATHER ICONS LOADER (Robust Async)
@@ -305,8 +327,9 @@ end
 -----------------------------------------------------
 -- BASIC ELEMENTS (Corners, Strokes, etc.)
 -----------------------------------------------------
+-- Use a slightly larger corner radius for a softer, cuter look.
 CreateElement("Corner", function(scale, offset)
-    return Create("UICorner", {CornerRadius = UDim.new(scale or 0, offset or 10)})
+    return Create("UICorner", {CornerRadius = UDim.new(scale or 0, offset or 12)})
 end)
 
 CreateElement("Stroke", function(color, thickness)
@@ -334,10 +357,20 @@ CreateElement("Frame", function(color)
     return Create("Frame", {BackgroundColor3 = color or Color3.fromRGB(255, 255, 255), BorderSizePixel = 0})
 end)
 
+-- Added an optional UIGradient for a more exotic flair in round frames.
 CreateElement("RoundFrame", function(color, scale, offset)
-    return Create("Frame", {BackgroundColor3 = color or Color3.fromRGB(255, 255, 255), BorderSizePixel = 0}, {
-        Create("UICorner", {CornerRadius = UDim.new(scale, offset)})
+    local base = Create("Frame", {BackgroundColor3 = color or Color3.fromRGB(255, 255, 255), BorderSizePixel = 0})
+    local corner = Create("UICorner", {CornerRadius = UDim.new(scale or 0, offset or 12)})
+    local gradient = Create("UIGradient", {
+        Rotation = 45,
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, color or Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(240, 240, 240))
+        })
     })
+    corner.Parent = base
+    gradient.Parent = base
+    return base
 end)
 
 CreateElement("Button", function()
@@ -420,24 +453,19 @@ function OrionLib:MakeNotification(config)
             BackgroundTransparency = 0,
             AutomaticSize = Enum.AutomaticSize.Y
         }), {
-            MakeElement("Stroke", Color3.fromRGB(93,93,93), 1.2),
-            MakeElement("Padding", 12,12,12,12),
-            SetProps(MakeElement("Image", config.Image), {Size = UDim2.new(0,20,0,20), ImageColor3 = Color3.fromRGB(240,240,240), Name = "Icon"}),
-            SetProps(MakeElement("Label", config.Name, 15), {Size = UDim2.new(1,-30,0,20), Position = UDim2.new(0,30,0,0), Font = Enum.Font.FredokaOne, Name = "Title"}),
-            SetProps(MakeElement("Label", config.Content, 14), {Size = UDim2.new(1,0,0,0), Position = UDim2.new(0,0,0,25), Font = Enum.Font.FredokaOne, Name = "Content", AutomaticSize = Enum.AutomaticSize.Y, TextColor3 = Color3.fromRGB(200,200,200), TextWrapped = true})
+            TweenService:Create(notifFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0,0,0,0)}):Play(),
+            task.wait(config.Time - 0.88),
+            TweenService:Create(notifFrame.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play(),
+            TweenService:Create(notifFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play(),
+            task.wait(0.3),
+            TweenService:Create(notifFrame.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0.9}):Play(),
+            TweenService:Create(notifFrame.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play(),
+            TweenService:Create(notifFrame.Content, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play(),
+            task.wait(0.05),
+            notifFrame:TweenPosition(UDim2.new(1,20,0,0), 'In', 'Quint', 0.8, true),
+            task.wait(1.35),
+            notifFrame:Destroy()
         })
-        TweenService:Create(notifFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0,0,0,0)}):Play()
-        task.wait(config.Time - 0.88)
-        TweenService:Create(notifFrame.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-        TweenService:Create(notifFrame, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
-        task.wait(0.3)
-        TweenService:Create(notifFrame.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0.9}):Play()
-        TweenService:Create(notifFrame.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
-        TweenService:Create(notifFrame.Content, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
-        task.wait(0.05)
-        notifFrame:TweenPosition(UDim2.new(1,20,0,0), 'In', 'Quint', 0.8, true)
-        task.wait(1.35)
-        notifFrame:Destroy()
     end)
 end
 
@@ -1086,7 +1114,7 @@ function OrionLib:MakeWindow(config)
                     dropdown.Value = "..."
                 end
                 local dropdownList = MakeElement("List")
-                local dropdownContainer = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(40,40,40), 4), {dropdownList}), {
+                local dropdownContainer = AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame", Color3.fromRGB(255,255,255), 4), {dropdownList}), {
                     Parent = itemParent,
                     Position = UDim2.new(0,0,0,38),
                     Size = UDim2.new(1,0,1,-38),
@@ -1119,7 +1147,7 @@ function OrionLib:MakeWindow(config)
                             Name = "Selected",
                             TextXAlignment = Enum.TextXAlignment.Right
                         }), "TextDark"),
-                        AddThemeObject(SetProps(MakeElement("Frame", nil), {
+                        AddThemeObject(SetProps(MakeElement("Frame"), {
                             Size = UDim2.new(1,0,0,1),
                             Position = UDim2.new(0,0,1,-1),
                             Name = "Line",
@@ -1360,10 +1388,7 @@ function OrionLib:MakeWindow(config)
                     Size = UDim2.new(0,24,0,24),
                     Position = UDim2.new(1,-12,0.5,0),
                     AnchorPoint = Vector2.new(1,0.5)
-                }), {
-                    AddThemeObject(MakeElement("Stroke"), "Stroke"),
-                    textboxActual
-                }), "Main")
+                }), { AddThemeObject(MakeElement("Stroke"), "Stroke"), textboxActual }), "Main")
                 local textboxFrame = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255,255,255), 0,5), {
                     Size = UDim2.new(1,0,0,38),
                     Parent = itemParent
@@ -1464,7 +1489,7 @@ function OrionLib:MakeWindow(config)
                         ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0,17,255)),
                         ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255,0,251)),
                         ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255,0,4))
-                    }}), Create("UICorner", {CornerRadius = UDim.new(0,5)}), hueSelection })
+                    }}), Create("UICorner", {CornerRadius = UDim.new(0,5)}) })
                 local colorpickerContainer = Create("Frame", {
                     Position = UDim2.new(0,0,0,32),
                     Size = UDim2.new(1,0,1,-32),
@@ -1620,6 +1645,6 @@ function OrionLib:MakeWindow(config)
 end
 
 -----------------------------------------------------
--- END OF ORIONLIB MODULE
+-- END OF ORIONLIB MODULE (Updated & Stylish)
 -----------------------------------------------------
 return OrionLib
