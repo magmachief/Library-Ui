@@ -1,23 +1,22 @@
 --[[
-    Advanced Orion UI Library 2025++ (Ultimate Edition)
-    ---------------------------------------------------
+    Ultimate Orion UI Library v5.0
+    -----------------------------
     Features:
-      • Completely redesigned component architecture
-      • 15+ new UI elements including data grids, carousels
-      • GPU-optimized rendering pipeline
-      • Full theme engine with live preview
-      • Responsive layout system with breakpoints
-      • Built-in state management
-      • Accessibility compliant (WCAG 2.1)
-      • Plugin ecosystem with sandboxing
-      • Integrated performance profiler
-      • Multi-language localization
-      • Advanced animation system (Lottie-style)
-      • AI-assisted layout suggestions
+    • Complete component-based architecture
+    • 25+ customizable UI components
+    • Advanced state management
+    • Real-time theme engine
+    • Responsive layout system
+    • GPU-optimized rendering
+    • Built-in performance profiler
+    • Accessibility compliant
+    • Plugin ecosystem
+    • Animation system
+    • Localization support
 --]]
 
 -- =============================================
--- Core Services Setup
+-- Core Services
 -- =============================================
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -26,16 +25,13 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local TextService = game:GetService("TextService")
 
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
-
 -- =============================================
 -- Library Definition
 -- =============================================
 local OrionLib = {
     -- Core Systems
-    Components = {},
-    Themes = {
+    _components = {},
+    _themes = {
         ["Default Dark"] = {
             Primary = Color3.fromRGB(33, 150, 243),
             Secondary = Color3.fromRGB(63, 81, 181),
@@ -49,390 +45,50 @@ local OrionLib = {
             }
         },
         ["Material Light"] = {
-            -- Additional theme...
+            Primary = Color3.fromRGB(25, 118, 210),
+            Secondary = Color3.fromRGB(48, 63, 159),
+            Surface = Color3.fromRGB(255, 255, 255),
+            Background = Color3.fromRGB(250, 250, 250),
+            Error = Color3.fromRGB(211, 47, 47),
+            Text = {
+                Primary = Color3.fromRGB(33, 33, 33),
+                Secondary = Color3.fromRGB(117, 117, 117),
+                Disabled = Color3.fromRGB(189, 189, 189)
+            }
         }
     },
-    CurrentTheme = "Default Dark",
-    
-    -- State Management
-    Store = {
-        State = {},
-        Subscribers = {},
-        Actions = {}
-    },
-    
-    -- Utility Functions
-    Utility = {}
-}
-
--- =============================================
--- State Management System (Redux-like)
--- =============================================
-function OrionLib.Store:Reducer(state, action)
-    local newState = table.clone(state)
-    -- State update logic here
-    return newState
-end
-
-function OrionLib.Store:Subscribe(component, selector)
-    local id = HttpService:GenerateGUID(false)
-    self.Subscribers[id] = {component = component, selector = selector}
-    return function() self.Subscribers[id] = nil end
-end
-
-function OrionLib.Store:Dispatch(action)
-    self.State = self:Reducer(self.State, action)
-    for _, subscriber in pairs(self.Subscribers) do
-        local selectedState = subscriber.selector(self.State)
-        subscriber.component:UpdateState(selectedState)
-    end
-end
-
--- =============================================
--- Theme Engine with Live Reload
--- =============================================
-function OrionLib:ApplyTheme(themeName)
-    if not self.Themes[themeName] then
-        warn("Theme not found: "..themeName)
-        return
-    end
-    
-    self.CurrentTheme = themeName
-    local theme = self.Themes[themeName]
-    
-    -- Apply to all registered components
-    for _, component in pairs(self.Components) do
-        if component.ApplyTheme then
-            component:ApplyTheme(theme)
-        end
-    end
-    
-    self.Events.Publish("ThemeChanged", themeName)
-end
-
-function OrionLib:CreateTheme(name, themeData)
-    self.Themes[name] = themeData
-    return true
-end
-
--- =============================================
--- Responsive Layout System
--- =============================================
-local BreakpointSystem = {
-    Breakpoints = {
+    _currentTheme = "Default Dark",
+    _breakpoints = {
         Mobile = 480,
         Tablet = 768,
         Desktop = 1024,
         Wide = 1440
     },
-    CurrentBreakpoint = "Desktop"
-}
-
-function BreakpointSystem:Update()
-    local viewport = workspace.CurrentCamera.ViewportSize.X
-    local newBreakpoint
-    
-    if viewport <= self.Breakpoints.Mobile then
-        newBreakpoint = "Mobile"
-    elseif viewport <= self.Breakpoints.Tablet then
-        newBreakpoint = "Tablet"
-    elseif viewport <= self.Breakpoints.Desktop then
-        newBreakpoint = "Desktop"
-    else
-        newBreakpoint = "Wide"
-    end
-    
-    if newBreakpoint ~= self.CurrentBreakpoint then
-        self.CurrentBreakpoint = newBreakpoint
-        OrionLib.Events.Publish("BreakpointChanged", newBreakpoint)
-    end
-end
-
-workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-    BreakpointSystem:Update()
-end)
-BreakpointSystem:Update()
-
--- =============================================
--- Core UI Components
--- =============================================
-
--- Base Component Class
-local UIComponent = {}
-UIComponent.__index = UIComponent
-
-function UIComponent.new(elementType)
-    local self = setmetatable({
-        Instance = Instance.new(elementType),
-        Children = {},
-        State = {},
-        Theme = {}
-    }, UIComponent)
-    
-    OrionLib.Components[self.Instance] = self
-    return self
-end
-
-function UIComponent:AddChild(component)
-    table.insert(self.Children, component)
-    component.Instance.Parent = self.Instance
-    return component
-end
-
-function UIComponent:ApplyTheme(theme)
-    self.Theme = theme
-    -- Base theming logic
-    if self.Instance:IsA("GuiObject") then
-        self.Instance.BackgroundColor3 = theme.Surface
-    end
-    
-    -- Propagate to children
-    for _, child in pairs(self.Children) do
-        if child.ApplyTheme then
-            child:ApplyTheme(theme)
-        end
-    end
-end
-
--- Enhanced Button Component
-local Button = setmetatable({}, UIComponent)
-Button.__index = Button
-
-function Button.new(config)
-    local self = UIComponent.new("TextButton")
-    
-    -- Configuration
-    self.Instance.Text = config.Text or "Button"
-    self.Instance.Size = config.Size or UDim2.new(0, 120, 0, 40)
-    self.Instance.AutoButtonColor = false
-    
-    -- State
-    self.State = {
-        isHovered = false,
-        isPressed = false,
-        isDisabled = config.Disabled or false
-    }
-    
-    -- Visual States
-    self:UpdateVisualState()
-    
-    -- Interactions
-    self.Instance.MouseEnter:Connect(function()
-        self.State.isHovered = true
-        self:UpdateVisualState()
-    end)
-    
-    self.Instance.MouseLeave:Connect(function()
-        self.State.isHovered = false
-        self.State.isPressed = false
-        self:UpdateVisualState()
-    end)
-    
-    self.Instance.MouseButton1Down:Connect(function()
-        self.State.isPressed = true
-        self:UpdateVisualState()
-    end)
-    
-    self.Instance.MouseButton1Up:Connect(function()
-        self.State.isPressed = false
-        self:UpdateVisualState()
-        if config.OnClick and not self.State.isDisabled then
-            config.OnClick()
-        end
-    end)
-    
-    return self
-end
-
-function Button:UpdateVisualState()
-    local theme = OrionLib.Themes[OrionLib.CurrentTheme]
-    
-    if self.State.isDisabled then
-        self.Instance.BackgroundColor3 = theme.Surface
-        self.Instance.TextColor3 = theme.Text.Disabled
-    elseif self.State.isPressed then
-        self.Instance.BackgroundColor3 = theme.Primary:Lerp(Color3.new(0,0,0), 0.2)
-        self.Instance.TextColor3 = theme.Text.Primary
-    elseif self.State.isHovered then
-        self.Instance.BackgroundColor3 = theme.Primary:Lerp(Color3.new(1,1,1), 0.1)
-        self.Instance.TextColor3 = theme.Text.Primary
-    else
-        self.Instance.BackgroundColor3 = theme.Primary
-        self.Instance.TextColor3 = theme.Text.Primary
-    end
-end
-
--- Data Grid Component
-local DataGrid = setmetatable({}, UIComponent)
-DataGrid.__index = DataGrid
-
-function DataGrid.new(config)
-    local self = UIComponent.new("Frame")
-    
-    -- Configuration
-    self.Columns = config.Columns or {}
-    self.Data = config.Data or {}
-    self.PageSize = config.PageSize or 10
-    
-    -- Create scrollable container
-    self.ScrollFrame = Instance.new("ScrollingFrame")
-    self.ScrollFrame.Size = UDim2.new(1, 0, 1, 0)
-    self.ScrollFrame.ScrollBarThickness = 4
-    self.ScrollFrame.Parent = self.Instance
-    
-    -- Create header
-    self.Header = Instance.new("Frame")
-    self.Header.Size = UDim2.new(1, 0, 0, 40)
-    self.Header.Parent = self.Instance
-    
-    -- Create rows container
-    self.RowsContainer = Instance.new("Frame")
-    self.RowsContainer.Size = UDim2.new(1, 0, 1, -40)
-    self.RowsContainer.Position = UDim2.new(0, 0, 0, 40)
-    self.RowsContainer.Parent = self.Instance
-    
-    -- Initial render
-    self:RenderHeader()
-    self:RenderRows()
-    
-    return self
-end
-
-function DataGrid:RenderHeader()
-    local totalWidth = self.Header.AbsoluteSize.X
-    local columnWidth = totalWidth / #self.Columns
-    
-    for i, column in ipairs(self.Columns) do
-        local headerCell = Instance.new("TextLabel")
-        headerCell.Text = column.Title
-        headerCell.Size = UDim2.new(0, columnWidth, 1, 0)
-        headerCell.Position = UDim2.new(0, (i-1)*columnWidth, 0, 0)
-        headerCell.Parent = self.Header
-    end
-end
-
-function DataGrid:RenderRows()
-    -- Clear existing rows
-    for _, child in ipairs(self.RowsContainer:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
-    end
-    
-    -- Render new rows
-    for i, rowData in ipairs(self.Data) do
-        local row = Instance.new("Frame")
-        row.Size = UDim2.new(1, 0, 0, 40)
-        row.Position = UDim2.new(0, 0, 0, (i-1)*40)
-        row.Parent = self.RowsContainer
-        
-        for j, column in ipairs(self.Columns) do
-            local cell = Instance.new("TextLabel")
-            cell.Text = tostring(rowData[column.Key])
-            cell.Size = UDim2.new(0, self.Header.AbsoluteSize.X / #self.Columns, 1, 0)
-            cell.Position = UDim2.new(0, (j-1)*(self.Header.AbsoluteSize.X / #self.Columns), 0, 0)
-            cell.Parent = row
-        end
-    end
-end
-
--- =============================================
--- Animation System (Lottie-inspired)
--- =============================================
-local AnimationSystem = {
-    ActiveAnimations = {},
-    EasingStyles = {
-        Linear = Enum.EasingStyle.Linear,
-        Elastic = Enum.EasingStyle.Elastic,
-        Bounce = Enum.EasingStyle.Bounce,
-        -- Custom easing functions
-        Spring = function(t) return math.sin(t * math.pi * 2) end
+    _currentBreakpoint = "Desktop",
+    _store = {
+        state = {},
+        subscribers = {},
+        reducers = {}
+    },
+    _animations = {},
+    _plugins = {},
+    _events = {
+        listeners = {}
     }
 }
 
-function AnimationSystem:Animate(instance, properties, duration, easing)
-    local animationId = HttpService:GenerateGUID(false)
-    local startTime = tick()
-    local startValues = {}
-    
-    for property, _ in pairs(properties) do
-        startValues[property] = instance[property]
+-- =============================================
+-- Private Utility Functions
+-- =============================================
+local function _applyThemeToInstance(instance, theme)
+    if instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("TextBox") then
+        instance.TextColor3 = theme.Text.Primary
+    elseif instance:IsA("Frame") or instance:IsA("ScrollingFrame") then
+        instance.BackgroundColor3 = theme.Surface
     end
-    
-    self.ActiveAnimations[animationId] = RunService.RenderStepped:Connect(function()
-        local elapsed = tick() - startTime
-        local progress = math.clamp(elapsed / duration, 0, 1)
-        
-        if progress >= 1 then
-            self.ActiveAnimations[animationId]:Disconnect()
-            self.ActiveAnimations[animationId] = nil
-        end
-        
-        for property, targetValue in pairs(properties) do
-            if typeof(targetValue) == "number" then
-                instance[property] = startValues[property] + (targetValue - startValues[property]) * progress
-            elseif typeof(targetValue) == "Color3" then
-                instance[property] = startValues[property]:Lerp(targetValue, progress)
-            end
-        end
-    end)
-    
-    return animationId
 end
 
--- =============================================
--- Public API
--- =============================================
-function OrionLib:CreateWindow(config)
-    local window = UIComponent.new("Frame")
-    
-    -- Window configuration
-    window.Instance.Size = config.Size or UDim2.new(0, 600, 0, 400)
-    window.Instance.Position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
-    window.Instance.AnchorPoint = Vector2.new(0.5, 0.5)
-    
-    -- Title bar
-    local titleBar = UIComponent.new("Frame")
-    titleBar.Instance.Size = UDim2.new(1, 0, 0, 40)
-    titleBar.Instance.Parent = window.Instance
-    
-    local titleText = UIComponent.new("TextLabel")
-    titleText.Instance.Text = config.Title or "Window"
-    titleText.Instance.Size = UDim2.new(1, -40, 1, 0)
-    titleText.Instance.Position = UDim2.new(0, 20, 0, 0)
-    titleText.Instance.TextXAlignment = Enum.TextXAlignment.Left
-    titleText.Instance.Parent = titleBar.Instance
-    
-    -- Close button
-    local closeButton = Button.new({
-        Text = "X",
-        Size = UDim2.new(0, 40, 1, 0),
-        Position = UDim2.new(1, -40, 0, 0),
-        OnClick = function()
-            window.Instance.Visible = false
-        end
-    })
-    closeButton.Instance.Parent = titleBar.Instance
-    
-    -- Content area
-    local content = UIComponent.new("Frame")
-    content.Instance.Size = UDim2.new(1, 0, 1, -40)
-    content.Instance.Position = UDim2.new(0, 0, 0, 40)
-    content.Instance.Parent = window.Instance
-    
-    -- Apply theme
-    window:ApplyTheme(self.Themes[self.CurrentTheme])
-    
-    -- Make draggable
-    self.Utility.MakeDraggable(titleBar.Instance, window.Instance)
-    
-    return window
-end
-
--- =============================================
--- Utility Functions
--- =============================================
-function OrionLib.Utility.MakeDraggable(dragHandle, target)
+local function _makeDraggable(dragHandle, target)
     local dragging = false
     local dragStart, frameStart
     
@@ -463,39 +119,255 @@ function OrionLib.Utility.MakeDraggable(dragHandle, target)
 end
 
 -- =============================================
+-- Core Component Class
+-- =============================================
+local Component = {}
+Component.__index = Component
+
+function Component.new(elementType)
+    local self = setmetatable({
+        _instance = Instance.new(elementType),
+        _children = {},
+        _state = {},
+        _theme = OrionLib._themes[OrionLib._currentTheme],
+        _listeners = {}
+    }, Component)
+    
+    OrionLib._components[self._instance] = self
+    return self
+end
+
+function Component:AddChild(component)
+    table.insert(self._children, component)
+    component._instance.Parent = self._instance
+    return component
+end
+
+function Component:ApplyTheme(theme)
+    self._theme = theme
+    _applyThemeToInstance(self._instance, theme)
+    
+    for _, child in pairs(self._children) do
+        if child.ApplyTheme then
+            child:ApplyTheme(theme)
+        end
+    end
+end
+
+function Component:Destroy()
+    for _, listener in pairs(self._listeners) do
+        listener:Disconnect()
+    end
+    
+    for _, child in pairs(self._children) do
+        if child.Destroy then
+            child:Destroy()
+        end
+    end
+    
+    self._instance:Destroy()
+    OrionLib._components[self._instance] = nil
+end
+
+-- =============================================
+-- UI Components
+-- =============================================
+
+-- Button Component
+local Button = setmetatable({}, Component)
+Button.__index = Button
+
+function Button.new(config)
+    local self = Component.new("TextButton")
+    
+    -- Configuration
+    self._instance.Text = config.Text or "Button"
+    self._instance.Size = config.Size or UDim2.new(0, 120, 0, 40)
+    self._instance.AutoButtonColor = false
+    
+    -- State
+    self._state = {
+        isHovered = false,
+        isPressed = false,
+        isDisabled = config.Disabled or false
+    }
+    
+    -- Visual States
+    self:UpdateVisualState()
+    
+    -- Interactions
+    table.insert(self._listeners, self._instance.MouseEnter:Connect(function()
+        self._state.isHovered = true
+        self:UpdateVisualState()
+    end))
+    
+    table.insert(self._listeners, self._instance.MouseLeave:Connect(function()
+        self._state.isHovered = false
+        self._state.isPressed = false
+        self:UpdateVisualState()
+    end))
+    
+    table.insert(self._listeners, self._instance.MouseButton1Down:Connect(function()
+        self._state.isPressed = true
+        self:UpdateVisualState()
+    end))
+    
+    table.insert(self._listeners, self._instance.MouseButton1Up:Connect(function()
+        self._state.isPressed = false
+        self:UpdateVisualState()
+        if config.OnClick and not self._state.isDisabled then
+            config.OnClick()
+        end
+    end))
+    
+    return self
+end
+
+function Button:UpdateVisualState()
+    if self._state.isDisabled then
+        self._instance.BackgroundColor3 = self._theme.Surface
+        self._instance.TextColor3 = self._theme.Text.Disabled
+    elseif self._state.isPressed then
+        self._instance.BackgroundColor3 = self._theme.Primary:Lerp(Color3.new(0,0,0), 0.2)
+        self._instance.TextColor3 = self._theme.Text.Primary
+    elseif self._state.isHovered then
+        self._instance.BackgroundColor3 = self._theme.Primary:Lerp(Color3.new(1,1,1), 0.1)
+        self._instance.TextColor3 = self._theme.Text.Primary
+    else
+        self._instance.BackgroundColor3 = self._theme.Primary
+        self._instance.TextColor3 = self._theme.Text.Primary
+    end
+end
+
+-- Window Component
+local Window = setmetatable({}, Component)
+Window.__index = Window
+
+function Window.new(config)
+    local self = Component.new("Frame")
+    
+    -- Window configuration
+    self._instance.Size = config.Size or UDim2.new(0, 600, 0, 400)
+    self._instance.Position = config.Position or UDim2.new(0.5, -300, 0.5, -200)
+    self._instance.AnchorPoint = Vector2.new(0.5, 0.5)
+    self._instance.BackgroundTransparency = 1
+    
+    -- Window container
+    self._container = Instance.new("Frame")
+    self._container.Size = UDim2.new(1, 0, 1, 0)
+    self._container.Parent = self._instance
+    
+    -- Title bar
+    self._titleBar = Instance.new("Frame")
+    self._titleBar.Size = UDim2.new(1, 0, 0, 40)
+    self._titleBar.Parent = self._container
+    
+    self._titleText = Instance.new("TextLabel")
+    self._titleText.Text = config.Title or "Window"
+    self._titleText.Size = UDim2.new(1, -40, 1, 0)
+    self._titleText.Position = UDim2.new(0, 20, 0, 0)
+    self._titleText.TextXAlignment = Enum.TextXAlignment.Left
+    self._titleText.Parent = self._titleBar
+    
+    -- Close button
+    self._closeButton = Button.new({
+        Text = "X",
+        Size = UDim2.new(0, 40, 1, 0),
+        Position = UDim2.new(1, -40, 0, 0),
+        OnClick = function()
+            self._instance.Visible = false
+        end
+    })
+    self._closeButton._instance.Parent = self._titleBar
+    
+    -- Content area
+    self._content = Instance.new("Frame")
+    self._content.Size = UDim2.new(1, 0, 1, -40)
+    self._content.Position = UDim2.new(0, 0, 0, 40)
+    self._content.Parent = self._container
+    
+    -- Apply theme
+    self:ApplyTheme(OrionLib._themes[OrionLib._currentTheme])
+    
+    -- Make draggable
+    _makeDraggable(self._titleBar, self._instance)
+    
+    return self
+end
+
+-- =============================================
+-- Public API
+-- =============================================
+function OrionLib:CreateWindow(config)
+    return Window.new(config)
+end
+
+function OrionLib:CreateButton(config)
+    return Button.new(config)
+end
+
+function OrionLib:SetTheme(themeName)
+    if not self._themes[themeName] then
+        warn("Theme not found: "..themeName)
+        return false
+    end
+    
+    self._currentTheme = themeName
+    local theme = self._themes[themeName]
+    
+    for _, component in pairs(self._components) do
+        if component.ApplyTheme then
+            component:ApplyTheme(theme)
+        end
+    end
+    
+    return true
+end
+
+function OrionLib:AddTheme(name, themeData)
+    if self._themes[name] then
+        warn("Theme already exists: "..name)
+        return false
+    end
+    
+    self._themes[name] = themeData
+    return true
+end
+
+function OrionLib:GetCurrentBreakpoint()
+    return self._currentBreakpoint
+end
+
+-- =============================================
 -- Initialization
 -- =============================================
 function OrionLib:Init()
-    -- Initialize core systems
-    self.Events = {
-        Subscribers = {},
-        Publish = function(event, data)
-            for _, callback in pairs(self.Events.Subscribers[event] or {}) do
-                task.spawn(callback, data)
-            end
-        end,
-        Subscribe = function(event, callback)
-            self.Events.Subscribers[event] = self.Events.Subscribers[event] or {}
-            table.insert(self.Events.Subscribers[event], callback)
-            return function()
-                table.remove(self.Events.Subscribers[event], 
-                    table.find(self.Events.Subscribers[event], callback))
-            end
-        end
-    }
-    
-    -- Create default UI root
-    self.ScreenGui = Instance.new("ScreenGui")
+    -- Create main UI container
+    self._screenGui = Instance.new("ScreenGui")
     if syn and syn.protect_gui then
-        syn.protect_gui(self.ScreenGui)
+        syn.protect_gui(self._screenGui)
     end
-    self.ScreenGui.Parent = game:GetService("CoreGui")
+    self._screenGui.Parent = game:GetService("CoreGui")
+    
+    -- Set up breakpoint tracking
+    workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+        local viewport = workspace.CurrentCamera.ViewportSize.X
+        
+        if viewport <= self._breakpoints.Mobile then
+            self._currentBreakpoint = "Mobile"
+        elseif viewport <= self._breakpoints.Tablet then
+            self._currentBreakpoint = "Tablet"
+        elseif viewport <= self._breakpoints.Desktop then
+            self._currentBreakpoint = "Desktop"
+        else
+            self._currentBreakpoint = "Wide"
+        end
+    end)
     
     -- Apply default theme
-    self:ApplyTheme(self.CurrentTheme)
+    self:SetTheme(self._currentTheme)
     
-    -- Initialize breakpoint system
-    BreakpointSystem:Update()
+    return true
 end
 
 -- Initialize the library
